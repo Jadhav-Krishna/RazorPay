@@ -3,17 +3,18 @@ const express = require('express');
 const path = require('path');
 const Razorpay = require('razorpay');
 const mongoose = require('mongoose');
-const Payment = require('./model/payment'); // Define this later
+const connectdb = require('./config/mongoose-connection');
+const Payment = require('./model/payment'); 
 
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('MongoDB connected');
-}).catch(err => console.log(err));
+// mongoose.connect(process.env.MONGODB_URI, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// }).then(() => {
+//   console.log('MongoDB connected');
+// }).catch(err => console.log(err));
 
 // Razorpay instance
 const razorpay = new Razorpay({
@@ -34,7 +35,7 @@ app.get('/', (req, res) => {
 
 app.post('/create/orderId', async (req, res) => {
   const options = {
-    amount: 21000 * 100, // amount in smallest currency unit
+    amount: 200 * 100, // amount in smallest currency unit
     currency: "INR",
   };
   try {
@@ -44,7 +45,7 @@ app.post('/create/orderId', async (req, res) => {
     // Save the order details in the database
     await Payment.create({
       orderId: order.id,
-      amount: order.amount,
+      amount: order.amount/100,
       currency: order.currency,
       status: 'pending',
     });
